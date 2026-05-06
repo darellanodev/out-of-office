@@ -1,6 +1,8 @@
 import * as THREE from 'three'
+import { createOfficeRoom } from './scene/OfficeRoom'
 
 const scene = new THREE.Scene()
+createOfficeRoom(scene)
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
 
