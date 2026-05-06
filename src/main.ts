@@ -5,11 +5,12 @@ import { PointerLockControls } from 'three/addons/controls/PointerLockControls.j
 const scene = new THREE.Scene()
 createOfficeRoom(scene)
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
+const canvas = document.getElementById('app') as HTMLCanvasElement
+const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000)
 camera.position.set(0, 1.7, 3)
 
-const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('app') as HTMLCanvasElement })
-renderer.setSize(window.innerWidth, window.innerHeight)
+const renderer = new THREE.WebGLRenderer({ canvas })
+renderer.setSize(canvas.clientWidth, canvas.clientHeight)
 document.body.appendChild(renderer.domElement)
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
@@ -24,7 +25,7 @@ const controls = new PointerLockControls(camera, document.body)
 document.addEventListener('click', () => controls.lock())
 
 const instructions = document.createElement('div')
-instructions.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-family:sans-serif;font-size:24px;pointer-events:none;'
+instructions.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#aaa;font-family:sans-serif;font-size:16px;pointer-events:none;'
 instructions.textContent = 'Click to play'
 document.body.appendChild(instructions)
 
