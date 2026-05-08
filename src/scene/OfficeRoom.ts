@@ -3,7 +3,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 
 export function createOfficeRoom(scene: THREE.Scene) {
   const loader = new GLTFLoader()
-  loader.load('../objects/scene1.glb', (gltf) => {
+  loader.load('./scene1.glb', (gltf) => {
     scene.add(gltf.scene)
   })
 }
