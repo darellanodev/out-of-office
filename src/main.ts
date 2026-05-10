@@ -64,7 +64,6 @@ const direction = new THREE.Vector3();
 let prevTime = performance.now();
 
 const raycaster = new THREE.Raycaster();
-const playerRadius = 0.3;
 
 function animate() {
   requestAnimationFrame(animate);
