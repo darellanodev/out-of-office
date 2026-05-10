@@ -66,28 +66,6 @@ let prevTime = performance.now();
 const raycaster = new THREE.Raycaster();
 const playerRadius = 0.3;
 
-function checkCollision(moveVector: THREE.Vector3): boolean {
-  if (colliders.length === 0) return false;
-  const origin = camera.position.clone();
-  origin.y -= 0.5;
-  const directions = [
-    moveVector.clone().normalize(),
-    new THREE.Vector3(1, 0, 0),
-    new THREE.Vector3(-1, 0, 0),
-    new THREE.Vector3(0, 0, 1),
-    new THREE.Vector3(0, 0, -1),
-  ];
-  for (const dir of directions) {
-    raycaster.set(origin, dir);
-    raycaster.far = playerRadius;
-    const intersects = raycaster.intersectObjects(colliders, true);
-    if (intersects.length > 0 && intersects[0].distance < playerRadius) {
-      return true;
-    }
-  }
-  return false;
-}
-
 function animate() {
   requestAnimationFrame(animate);
   const time = performance.now();
