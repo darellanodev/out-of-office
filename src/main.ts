@@ -1,117 +1,130 @@
-import * as THREE from 'three'
-import { createOfficeRoom } from './scene/OfficeRoom'
-import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js'
+import * as THREE from "three";
+import { createOfficeRoom } from "./scene/OfficeRoom";
+import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
 
-const scene = new THREE.Scene()
-const colliders: THREE.Object3D[] = []
-createOfficeRoom(scene, colliders)
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x111111);
 
-const canvas = document.getElementById('app') as HTMLCanvasElement
-const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000)
-camera.position.set(0, 1.7, 3)
+const colliders: THREE.Object3D[] = [];
+createOfficeRoom(scene, colliders);
 
-const renderer = new THREE.WebGLRenderer({ canvas })
-renderer.setSize(canvas.clientWidth, canvas.clientHeight)
-document.body.appendChild(renderer.domElement)
+const canvas = document.getElementById("app") as HTMLCanvasElement;
+const camera = new THREE.PerspectiveCamera(
+  75,
+  canvas.clientWidth / canvas.clientHeight,
+  0.1,
+  1000,
+);
+camera.position.set(0, 1.7, 3);
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
-scene.add(ambientLight)
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1)
-directionalLight.position.set(5, 5, 5)
-scene.add(directionalLight)
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.15);
+scene.add(ambientLight);
 
-const controls = new PointerLockControls(camera, document.body)
+const ceilingLight = new THREE.PointLight(0xfff5e0, 3, 25);
+ceilingLight.position.set(0, 2.4, 0);
+ceilingLight.castShadow = true;
+ceilingLight.shadow.mapSize.width = 1024;
+ceilingLight.shadow.mapSize.height = 1024;
+scene.add(ceilingLight);
 
-document.addEventListener('click', () => controls.lock())
+const ceilingLight2 = new THREE.PointLight(0xfff5e0, 2.5, 20);
+ceilingLight2.position.set(0, 2.4, -8);
+ceilingLight2.castShadow = true;
+scene.add(ceilingLight2);
 
-const instructions = document.createElement('div')
-instructions.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#aaa;font-family:sans-serif;font-size:16px;pointer-events:none;'
-instructions.textContent = 'Click to play'
-document.body.appendChild(instructions)
+document.body.appendChild(renderer.domElement);
 
-const keys = { w: false, a: false, s: false, d: false }
+const controls = new PointerLockControls(camera, document.body);
+document.addEventListener("click", () => controls.lock());
 
-document.addEventListener('keydown', (e) => {
-  const key = e.key.toLowerCase()
-  if (key in keys) keys[key as keyof typeof keys] = true
-})
+const instructions = document.createElement("div");
+instructions.style.cssText =
+  "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#aaa;font-family:sans-serif;font-size:16px;pointer-events:none;";
+instructions.textContent = "Click to play";
+document.body.appendChild(instructions);
 
-document.addEventListener('keyup', (e) => {
-  const key = e.key.toLowerCase()
-  if (key in keys) keys[key as keyof typeof keys] = false
-})
+const keys = { w: false, a: false, s: false, d: false };
+document.addEventListener("keydown", (e) => {
+  const key = e.key.toLowerCase();
+  if (key in keys) keys[key as keyof typeof keys] = true;
+});
+document.addEventListener("keyup", (e) => {
+  const key = e.key.toLowerCase();
+  if (key in keys) keys[key as keyof typeof keys] = false;
+});
 
-const speed = 3
-const velocity = new THREE.Vector3()
-const direction = new THREE.Vector3()
-let prevTime = performance.now()
+const speed = 3;
+const direction = new THREE.Vector3();
+let prevTime = performance.now();
 
-const raycaster = new THREE.Raycaster()
-const playerRadius = 0.3
+const raycaster = new THREE.Raycaster();
+const playerRadius = 0.3;
 
 function checkCollision(moveVector: THREE.Vector3): boolean {
-  if (colliders.length === 0) return false
-
-  const origin = camera.position.clone()
-  origin.y -= 0.5
-
+  if (colliders.length === 0) return false;
+  const origin = camera.position.clone();
+  origin.y -= 0.5;
   const directions = [
     moveVector.clone().normalize(),
     new THREE.Vector3(1, 0, 0),
     new THREE.Vector3(-1, 0, 0),
     new THREE.Vector3(0, 0, 1),
-    new THREE.Vector3(0, 0, -1)
-  ]
-
+    new THREE.Vector3(0, 0, -1),
+  ];
   for (const dir of directions) {
-    raycaster.set(origin, dir)
-    raycaster.far = playerRadius
-    const intersects = raycaster.intersectObjects(colliders, true)
+    raycaster.set(origin, dir);
+    raycaster.far = playerRadius;
+    const intersects = raycaster.intersectObjects(colliders, true);
     if (intersects.length > 0 && intersects[0].distance < playerRadius) {
-      return true
+      return true;
     }
   }
-  return false
+  return false;
 }
 
 function animate() {
-  requestAnimationFrame(animate)
-
-  const time = performance.now()
-  const delta = (time - prevTime) / 1000
-  prevTime = time
+  requestAnimationFrame(animate);
+  const time = performance.now();
+  const delta = (time - prevTime) / 1000;
+  prevTime = time;
 
   if (controls.isLocked) {
-    direction.z = Number(keys.w) - Number(keys.s)
-    direction.x = Number(keys.d) - Number(keys.a)
-    direction.normalize()
+    direction.z = Number(keys.w) - Number(keys.s);
+    direction.x = Number(keys.d) - Number(keys.a);
+    direction.normalize();
 
-    const forward = new THREE.Vector3()
-    const right = new THREE.Vector3()
-    camera.getWorldDirection(forward)
-    forward.y = 0
-    forward.normalize()
-    right.crossVectors(forward, new THREE.Vector3(0, 1, 0))
+    const forward = new THREE.Vector3();
+    const right = new THREE.Vector3();
+    camera.getWorldDirection(forward);
+    forward.y = 0;
+    forward.normalize();
+    right.crossVectors(forward, new THREE.Vector3(0, 1, 0));
 
-    const moveVector = new THREE.Vector3()
-    if (keys.w || keys.s) moveVector.addScaledVector(forward, direction.z * speed * delta)
-    if (keys.a || keys.d) moveVector.addScaledVector(right, direction.x * speed * delta)
+    const moveVector = new THREE.Vector3();
+    if (keys.w || keys.s)
+      moveVector.addScaledVector(forward, direction.z * speed * delta);
+    if (keys.a || keys.d)
+      moveVector.addScaledVector(right, direction.x * speed * delta);
 
     if (moveVector.length() > 0) {
-      const forwardDir = moveVector.clone().normalize()
-      raycaster.set(camera.position, forwardDir)
-      raycaster.far = moveVector.length() + 0.2
-      const intersects = raycaster.intersectObjects(colliders, true)
-      
+      const forwardDir = moveVector.clone().normalize();
+      raycaster.set(camera.position, forwardDir);
+      raycaster.far = moveVector.length() + 0.2;
+      const intersects = raycaster.intersectObjects(colliders, true);
       if (intersects.length === 0 || intersects[0].distance > 0.2) {
-        camera.position.add(moveVector)
+        camera.position.add(moveVector);
       }
     }
   }
 
-  instructions.style.display = controls.isLocked ? 'none' : 'block'
-  renderer.render(scene, camera)
+  instructions.style.display = controls.isLocked ? "none" : "block";
+  renderer.render(scene, camera);
 }
 
-animate()
+animate();
