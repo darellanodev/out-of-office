@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { Player } from "./Player";
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x111111);
@@ -50,29 +50,9 @@ loader.load("/scene1.glb", (gltf) => {
 
 document.body.appendChild(renderer.domElement);
 
-const controls = new PointerLockControls(camera, document.body);
-document.addEventListener("click", () => controls.lock());
+const player = new Player(camera, colliders);
 
-const instructions = document.createElement("div");
-instructions.style.cssText =
-  "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#aaa;font-family:sans-serif;font-size:16px;pointer-events:none;";
-instructions.textContent = "Click to play";
-document.body.appendChild(instructions);
-
-const keys = { w: false, a: false, s: false, d: false };
-document.addEventListener("keydown", (e) => {
-  const key = e.key.toLowerCase();
-  if (key in keys) keys[key as keyof typeof keys] = true;
-});
-document.addEventListener("keyup", (e) => {
-  const key = e.key.toLowerCase();
-  if (key in keys) keys[key as keyof typeof keys] = false;
-});
-
-const speed = 3;
-const direction = new THREE.Vector3();
 let prevTime = performance.now();
-const raycaster = new THREE.Raycaster();
 
 function animate() {
   requestAnimationFrame(animate);
@@ -80,36 +60,8 @@ function animate() {
   const delta = (time - prevTime) / 1000;
   prevTime = time;
 
-  if (controls.isLocked) {
-    direction.z = Number(keys.w) - Number(keys.s);
-    direction.x = Number(keys.d) - Number(keys.a);
-    direction.normalize();
+  player.update(delta);
 
-    const forward = new THREE.Vector3();
-    const right = new THREE.Vector3();
-    camera.getWorldDirection(forward);
-    forward.y = 0;
-    forward.normalize();
-    right.crossVectors(forward, new THREE.Vector3(0, 1, 0));
-
-    const moveVector = new THREE.Vector3();
-    if (keys.w || keys.s)
-      moveVector.addScaledVector(forward, direction.z * speed * delta);
-    if (keys.a || keys.d)
-      moveVector.addScaledVector(right, direction.x * speed * delta);
-
-    if (moveVector.length() > 0) {
-      const forwardDir = moveVector.clone().normalize();
-      raycaster.set(camera.position, forwardDir);
-      raycaster.far = moveVector.length() + 0.2;
-      const intersects = raycaster.intersectObjects(colliders, true);
-      if (intersects.length === 0 || intersects[0].distance > 0.2) {
-        camera.position.add(moveVector);
-      }
-    }
-  }
-
-  instructions.style.display = controls.isLocked ? "none" : "block";
   renderer.render(scene, camera);
 }
 
