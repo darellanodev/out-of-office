@@ -11,8 +11,8 @@ const canvas = document.getElementById("app") as HTMLCanvasElement;
 const camera = new THREE.PerspectiveCamera(
   75,
   canvas.clientWidth / canvas.clientHeight,
-  0.1,
-  1000,
+  0.05,
+  100,
 );
 camera.position.set(0, 1.7, 3);
 
@@ -35,6 +35,8 @@ loader.load("/scene1.glb", (gltf) => {
       light.castShadow = true;
       light.shadow.mapSize.width = 1024;
       light.shadow.mapSize.height = 1024;
+      light.shadow.bias = -0.005;
+      light.shadow.normalBias = 0.02;
     }
 
     if ((object as THREE.Mesh).isMesh) {
