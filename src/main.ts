@@ -1,12 +1,11 @@
 import * as THREE from "three";
-import { createOfficeRoom } from "./scene/OfficeRoom";
 import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x111111);
 
 const colliders: THREE.Object3D[] = [];
-createOfficeRoom(scene, colliders);
 
 const canvas = document.getElementById("app") as HTMLCanvasElement;
 const camera = new THREE.PerspectiveCamera(
@@ -26,17 +25,26 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.15);
 scene.add(ambientLight);
 
-const ceilingLight = new THREE.PointLight(0xfff5e0, 3, 25);
-ceilingLight.position.set(0, 2.4, 0);
-ceilingLight.castShadow = true;
-ceilingLight.shadow.mapSize.width = 1024;
-ceilingLight.shadow.mapSize.height = 1024;
-scene.add(ceilingLight);
+const loader = new GLTFLoader();
+loader.load("/scene1.glb", (gltf) => {
+  scene.add(gltf.scene);
 
-const ceilingLight2 = new THREE.PointLight(0xfff5e0, 2.5, 20);
-ceilingLight2.position.set(0, 2.4, -8);
-ceilingLight2.castShadow = true;
-scene.add(ceilingLight2);
+  gltf.scene.traverse((object) => {
+    if ((object as THREE.Light).isLight) {
+      const light = object as THREE.PointLight;
+      light.castShadow = true;
+      light.shadow.mapSize.width = 1024;
+      light.shadow.mapSize.height = 1024;
+    }
+
+    if ((object as THREE.Mesh).isMesh) {
+      const mesh = object as THREE.Mesh;
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      colliders.push(mesh);
+    }
+  });
+});
 
 document.body.appendChild(renderer.domElement);
 
@@ -62,7 +70,6 @@ document.addEventListener("keyup", (e) => {
 const speed = 3;
 const direction = new THREE.Vector3();
 let prevTime = performance.now();
-
 const raycaster = new THREE.Raycaster();
 
 function animate() {
