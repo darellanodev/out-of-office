@@ -1,1 +1,1 @@
-pnpm run build
+VITE_BASE_URL=./ pnpm run build

@@ -26,7 +26,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.15);
 scene.add(ambientLight);
 
 const loader = new GLTFLoader();
-loader.load("/scene1.glb", (gltf) => {
+loader.load("scene1.glb", (gltf) => {
   scene.add(gltf.scene);
 
   gltf.scene.traverse((object) => {
