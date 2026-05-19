@@ -55,7 +55,10 @@ export class Player {
 
     const moveVector = new THREE.Vector3();
     if (this.keys.w || this.keys.s)
-      moveVector.addScaledVector(forward, this.direction.z * this.speed * delta);
+      moveVector.addScaledVector(
+        forward,
+        this.direction.z * this.speed * delta,
+      );
     if (this.keys.a || this.keys.d)
       moveVector.addScaledVector(right, this.direction.x * this.speed * delta);
 
