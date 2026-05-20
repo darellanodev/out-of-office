@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { Player } from "./Player";
+import { CONFIG } from "./config";
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x111111);
@@ -9,12 +10,16 @@ const colliders: THREE.Object3D[] = [];
 
 const canvas = document.getElementById("app") as HTMLCanvasElement;
 const camera = new THREE.PerspectiveCamera(
-  75,
+  CONFIG.camera.fov,
   canvas.clientWidth / canvas.clientHeight,
-  0.05,
-  100,
+  CONFIG.camera.near,
+  CONFIG.camera.far,
 );
-camera.position.set(0, 3.3, 3);
+camera.position.set(
+  CONFIG.camera.position.x,
+  CONFIG.camera.position.y,
+  CONFIG.camera.position.z,
+);
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(canvas.clientWidth, canvas.clientHeight);
@@ -33,10 +38,10 @@ loader.load("scene1.glb", (gltf) => {
     if ((object as THREE.Light).isLight) {
       const light = object as THREE.PointLight;
       light.castShadow = true;
-      light.shadow.mapSize.width = 1024;
-      light.shadow.mapSize.height = 1024;
-      light.shadow.bias = -0.005;
-      light.shadow.normalBias = 0.02;
+      light.shadow.mapSize.width = CONFIG.shadows.mapSize;
+      light.shadow.mapSize.height = CONFIG.shadows.mapSize;
+      light.shadow.bias = CONFIG.shadows.bias;
+      light.shadow.normalBias = CONFIG.shadows.normalBias;
     }
 
     if ((object as THREE.Mesh).isMesh) {

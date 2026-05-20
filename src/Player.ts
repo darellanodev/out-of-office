@@ -1,11 +1,12 @@
 import * as THREE from "three";
 import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
+import { CONFIG } from "./config";
 
 export class Player {
   private controls: PointerLockControls;
   private keys = { w: false, a: false, s: false, d: false };
   private direction = new THREE.Vector3();
-  private speed = 3;
+  private speed = CONFIG.player.speed;
   private raycaster = new THREE.Raycaster();
   private colliders: THREE.Object3D[];
   private camera: THREE.Camera;
@@ -65,9 +66,9 @@ export class Player {
     if (moveVector.length() > 0) {
       const forwardDir = moveVector.clone().normalize();
       this.raycaster.set(this.camera.position, forwardDir);
-      this.raycaster.far = moveVector.length() + 0.2;
+      this.raycaster.far = moveVector.length() + CONFIG.player.collisionMargin;
       const intersects = this.raycaster.intersectObjects(this.colliders, true);
-      if (intersects.length === 0 || intersects[0].distance > 0.2) {
+      if (intersects.length === 0 || intersects[0].distance > CONFIG.player.collisionMargin) {
         this.camera.position.add(moveVector);
       }
     }
