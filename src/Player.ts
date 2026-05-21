@@ -62,12 +62,19 @@ export class Player {
       this.raycaster.set(this.camera.position, forwardDir);
       this.raycaster.far = moveVector.length() + CONFIG.player.collisionMargin;
       const intersects = this.raycaster.intersectObjects(this.colliders, true);
-      if (intersects.length === 0 || intersects[0].distance > CONFIG.player.collisionMargin) {
+      if (
+        intersects.length === 0 ||
+        intersects[0].distance > CONFIG.player.collisionMargin
+      ) {
         this.camera.position.add(moveVector);
       }
     }
 
-    this.hud.update(this.controls.isLocked, this.distanceTraveled, CONFIG.player.distanceThreshold);
+    this.hud.update(
+      this.controls.isLocked,
+      this.distanceTraveled,
+      CONFIG.player.distanceThreshold,
+    );
   }
 
   get isLocked(): boolean {

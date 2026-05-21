@@ -3,6 +3,18 @@ import { Player } from "./Player";
 import { CONFIG } from "./config";
 import { loadScene } from "./SceneLoader";
 
+const bgMusic = new Audio(`${import.meta.env.BASE_URL}music.mp3`);
+bgMusic.loop = true;
+bgMusic.volume = 0.8;
+
+function playMusicOnInteraction() {
+  bgMusic.play();
+  document.removeEventListener("click", playMusicOnInteraction);
+  document.removeEventListener("keydown", playMusicOnInteraction);
+}
+document.addEventListener("click", playMusicOnInteraction);
+document.addEventListener("keydown", playMusicOnInteraction);
+
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x111111);
 
