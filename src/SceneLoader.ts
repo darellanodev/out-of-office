@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { CONFIG } from "./config";
+import { SHADOWS } from "./constants/shadows";
 
 export function loadScene(scene: THREE.Scene): Promise<THREE.Mesh[]> {
   return new Promise((resolve, reject) => {
@@ -15,10 +15,10 @@ export function loadScene(scene: THREE.Scene): Promise<THREE.Mesh[]> {
           if (object instanceof THREE.Light) {
             object.castShadow = true;
             if (object.shadow) {
-              object.shadow.mapSize.width = CONFIG.shadows.mapSize;
-              object.shadow.mapSize.height = CONFIG.shadows.mapSize;
-              object.shadow.bias = CONFIG.shadows.bias;
-              object.shadow.normalBias = CONFIG.shadows.normalBias;
+              object.shadow.mapSize.width = SHADOWS.mapSize;
+              object.shadow.mapSize.height = SHADOWS.mapSize;
+              object.shadow.bias = SHADOWS.bias;
+              object.shadow.normalBias = SHADOWS.normalBias;
             }
           }
 

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { Player } from "./Player";
-import { CONFIG } from "./config";
+import { CAMERA } from "./constants/camera";
 import { loadScene } from "./SceneLoader";
 
 const bgMusic = new Audio(`${import.meta.env.BASE_URL}music.mp3`);
@@ -20,16 +20,12 @@ scene.background = new THREE.Color(0x111111);
 
 const canvas = document.getElementById("app") as HTMLCanvasElement;
 const camera = new THREE.PerspectiveCamera(
-  CONFIG.camera.fov,
+  CAMERA.fov,
   canvas.clientWidth / canvas.clientHeight,
-  CONFIG.camera.near,
-  CONFIG.camera.far,
+  CAMERA.near,
+  CAMERA.far,
 );
-camera.position.set(
-  CONFIG.camera.position.x,
-  CONFIG.camera.position.y,
-  CONFIG.camera.position.z,
-);
+camera.position.set(CAMERA.position.x, CAMERA.position.y, CAMERA.position.z);
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(canvas.clientWidth, canvas.clientHeight);
