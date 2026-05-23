@@ -3,8 +3,11 @@ import { Player } from './Player'
 import { CAMERA } from './constants/camera'
 import { loadScene } from './SceneLoader'
 import { MUSIC } from './constants/music'
+import { SCENE } from './constants/scene'
+import { LIGHTS } from './constants/lights'
+import { ASSETS } from './constants/assets'
 
-const bgMusic = new Audio(`${import.meta.env.BASE_URL}music.mp3`)
+const bgMusic = new Audio(`${import.meta.env.BASE_URL}${ASSETS.music}`)
 bgMusic.loop = MUSIC.loop
 bgMusic.volume = MUSIC.volume
 
@@ -17,7 +20,7 @@ document.addEventListener('click', playMusicOnInteraction)
 document.addEventListener('keydown', playMusicOnInteraction)
 
 const scene = new THREE.Scene()
-scene.background = new THREE.Color(0x111111)
+scene.background = new THREE.Color(SCENE.background)
 
 const canvas = document.getElementById('app') as HTMLCanvasElement
 const camera = new THREE.PerspectiveCamera(
@@ -34,7 +37,7 @@ renderer.setPixelRatio(window.devicePixelRatio)
 renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.15)
+const ambientLight = new THREE.AmbientLight(LIGHTS.ambientColor, LIGHTS.ambientIntensity)
 scene.add(ambientLight)
 
 document.body.appendChild(renderer.domElement)

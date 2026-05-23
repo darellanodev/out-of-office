@@ -1,12 +1,13 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { SHADOWS } from './constants/shadows'
+import { ASSETS } from './constants/assets'
 
 export function loadScene(scene: THREE.Scene): Promise<THREE.Mesh[]> {
   return new Promise((resolve, reject) => {
     const loader = new GLTFLoader()
     loader.load(
-      'scene1.glb',
+      ASSETS.scene,
       (gltf) => {
         scene.add(gltf.scene)
         const colliders: THREE.Mesh[] = []

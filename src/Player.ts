@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js'
 import { PLAYER } from './constants/player'
-import { HUD } from './HUD'
+import { Hud } from './Hud'
 
 export class Player {
   private controls: PointerLockControls
@@ -11,14 +11,14 @@ export class Player {
   private raycaster = new THREE.Raycaster()
   private colliders: THREE.Object3D[]
   private camera: THREE.Camera
-  private hud: HUD
+  private hud: Hud
   private distanceTraveled = 0
 
   constructor(camera: THREE.Camera, colliders: THREE.Object3D[]) {
     this.camera = camera
     this.colliders = colliders
     this.controls = new PointerLockControls(camera, document.body)
-    this.hud = new HUD()
+    this.hud = new Hud()
 
     document.addEventListener('click', () => this.controls.lock())
     document.addEventListener('keydown', (e) => this.onKeyDown(e))
