@@ -2,10 +2,11 @@ import * as THREE from "three";
 import { Player } from "./Player";
 import { CAMERA } from "./constants/camera";
 import { loadScene } from "./SceneLoader";
+import { MUSIC } from "./constants/music";
 
 const bgMusic = new Audio(`${import.meta.env.BASE_URL}music.mp3`);
-bgMusic.loop = true;
-bgMusic.volume = 0.8;
+bgMusic.loop = MUSIC.loop;
+bgMusic.volume = MUSIC.volume;
 
 function playMusicOnInteraction() {
   bgMusic.play();
