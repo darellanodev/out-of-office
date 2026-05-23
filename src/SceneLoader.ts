@@ -1,38 +1,38 @@
-import * as THREE from "three";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { SHADOWS } from "./constants/shadows";
+import * as THREE from 'three'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { SHADOWS } from './constants/shadows'
 
 export function loadScene(scene: THREE.Scene): Promise<THREE.Mesh[]> {
   return new Promise((resolve, reject) => {
-    const loader = new GLTFLoader();
+    const loader = new GLTFLoader()
     loader.load(
-      "scene1.glb",
+      'scene1.glb',
       (gltf) => {
-        scene.add(gltf.scene);
-        const colliders: THREE.Mesh[] = [];
+        scene.add(gltf.scene)
+        const colliders: THREE.Mesh[] = []
 
         gltf.scene.traverse((object) => {
           if (object instanceof THREE.Light) {
-            object.castShadow = true;
+            object.castShadow = true
             if (object.shadow) {
-              object.shadow.mapSize.width = SHADOWS.mapSize;
-              object.shadow.mapSize.height = SHADOWS.mapSize;
-              object.shadow.bias = SHADOWS.bias;
-              object.shadow.normalBias = SHADOWS.normalBias;
+              object.shadow.mapSize.width = SHADOWS.mapSize
+              object.shadow.mapSize.height = SHADOWS.mapSize
+              object.shadow.bias = SHADOWS.bias
+              object.shadow.normalBias = SHADOWS.normalBias
             }
           }
 
           if (object instanceof THREE.Mesh) {
-            object.castShadow = true;
-            object.receiveShadow = true;
-            colliders.push(object);
+            object.castShadow = true
+            object.receiveShadow = true
+            colliders.push(object)
           }
-        });
+        })
 
-        resolve(colliders);
+        resolve(colliders)
       },
       undefined,
       (error) => reject(error),
-    );
-  });
+    )
+  })
 }

@@ -1,59 +1,59 @@
-import * as THREE from "three";
-import { Player } from "./Player";
-import { CAMERA } from "./constants/camera";
-import { loadScene } from "./SceneLoader";
-import { MUSIC } from "./constants/music";
+import * as THREE from 'three'
+import { Player } from './Player'
+import { CAMERA } from './constants/camera'
+import { loadScene } from './SceneLoader'
+import { MUSIC } from './constants/music'
 
-const bgMusic = new Audio(`${import.meta.env.BASE_URL}music.mp3`);
-bgMusic.loop = MUSIC.loop;
-bgMusic.volume = MUSIC.volume;
+const bgMusic = new Audio(`${import.meta.env.BASE_URL}music.mp3`)
+bgMusic.loop = MUSIC.loop
+bgMusic.volume = MUSIC.volume
 
 function playMusicOnInteraction() {
-  bgMusic.play();
-  document.removeEventListener("click", playMusicOnInteraction);
-  document.removeEventListener("keydown", playMusicOnInteraction);
+  bgMusic.play()
+  document.removeEventListener('click', playMusicOnInteraction)
+  document.removeEventListener('keydown', playMusicOnInteraction)
 }
-document.addEventListener("click", playMusicOnInteraction);
-document.addEventListener("keydown", playMusicOnInteraction);
+document.addEventListener('click', playMusicOnInteraction)
+document.addEventListener('keydown', playMusicOnInteraction)
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x111111);
+const scene = new THREE.Scene()
+scene.background = new THREE.Color(0x111111)
 
-const canvas = document.getElementById("app") as HTMLCanvasElement;
+const canvas = document.getElementById('app') as HTMLCanvasElement
 const camera = new THREE.PerspectiveCamera(
   CAMERA.fov,
   canvas.clientWidth / canvas.clientHeight,
   CAMERA.near,
   CAMERA.far,
-);
-camera.position.set(CAMERA.position.x, CAMERA.position.y, CAMERA.position.z);
+)
+camera.position.set(CAMERA.position.x, CAMERA.position.y, CAMERA.position.z)
 
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
+renderer.setSize(canvas.clientWidth, canvas.clientHeight)
+renderer.setPixelRatio(window.devicePixelRatio)
+renderer.shadowMap.enabled = true
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.15);
-scene.add(ambientLight);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.15)
+scene.add(ambientLight)
 
-document.body.appendChild(renderer.domElement);
+document.body.appendChild(renderer.domElement)
 
 loadScene(scene).then((colliders) => {
-  const player = new Player(camera, colliders);
+  const player = new Player(camera, colliders)
 
-  let prevTime = performance.now();
+  let prevTime = performance.now()
 
   function animate() {
-    requestAnimationFrame(animate);
-    const time = performance.now();
-    const delta = (time - prevTime) / 1000;
-    prevTime = time;
+    requestAnimationFrame(animate)
+    const time = performance.now()
+    const delta = (time - prevTime) / 1000
+    prevTime = time
 
-    player.update(delta);
+    player.update(delta)
 
-    renderer.render(scene, camera);
+    renderer.render(scene, camera)
   }
 
-  animate();
-});
+  animate()
+})
