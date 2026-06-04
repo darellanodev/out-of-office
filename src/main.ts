@@ -50,25 +50,39 @@ let canInteract = false
 
 loadScene(scene).then((sceneData) => {
   const player = new Player(camera, sceneData.colliders)
-  let { doorObject, teleportPos } = sceneData
+  let { doorObject, teleportPos, linkedDoors } = sceneData
+
+  let currentDoor: { object: THREE.Object3D; teleport: THREE.Vector3; isLinked: boolean } | null = null
 
   player.onInteract = async () => {
-    if (!canInteract || !doorObject || !teleportPos) return
+    if (!canInteract || !currentDoor) return
     canInteract = false
     player.hideInteraction()
-
     await transition.fadeOut()
 
-    doorObject.visible = false
-    doorObject.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        player.removeCollider(child)
+    if (currentDoor.isLinked) {
+      for (const entry of linkedDoors) {
+        entry.doorObject.visible = false
+        entry.doorObject.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            player.removeCollider(child)
+          }
+        })
       }
-    })
+      linkedDoors = []
+    } else {
+      doorObject!.visible = false
+      doorObject!.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          player.removeCollider(child)
+        }
+      })
+      doorObject = null
+      teleportPos = null
+    }
 
-    camera.position.copy(teleportPos)
-    doorObject = null
-    teleportPos = null
+    camera.position.copy(currentDoor.teleport)
+    currentDoor = null
     await transition.fadeIn()
   }
 
@@ -82,24 +96,40 @@ loadScene(scene).then((sceneData) => {
 
     player.update(delta)
 
-    if (player.isLocked && doorObject && teleportPos) {
-      doorRaycaster.setFromCamera(new THREE.Vector2(0, 0), camera)
-      doorRaycaster.far = DOOR.interactionDistance
-      const hits = doorRaycaster.intersectObject(doorObject, true)
+    let foundDoor: typeof currentDoor = null
 
-      if (hits.length > 0) {
-        if (!canInteract) {
-          canInteract = true
-          player.showInteraction('E: Abrir')
-        }
-      } else {
-        if (canInteract) {
-          canInteract = false
-          player.hideInteraction()
+    if (player.isLocked) {
+      if (doorObject && teleportPos) {
+        doorRaycaster.setFromCamera(new THREE.Vector2(0, 0), camera)
+        doorRaycaster.far = DOOR.interactionDistance
+        const hits = doorRaycaster.intersectObject(doorObject, true)
+        if (hits.length > 0) {
+          foundDoor = { object: doorObject, teleport: teleportPos, isLinked: false }
         }
       }
+
+      if (!foundDoor) {
+        for (const entry of linkedDoors) {
+          doorRaycaster.setFromCamera(new THREE.Vector2(0, 0), camera)
+          doorRaycaster.far = DOOR.interactionDistance
+          const hits = doorRaycaster.intersectObject(entry.doorObject, true)
+          if (hits.length > 0) {
+            foundDoor = { object: entry.doorObject, teleport: entry.teleportPos, isLinked: true }
+            break
+          }
+        }
+      }
+    }
+
+    if (foundDoor) {
+      if (currentDoor !== foundDoor) {
+        currentDoor = foundDoor
+        canInteract = true
+        player.showInteraction('E: Abrir')
+      }
     } else {
-      if (canInteract) {
+      if (currentDoor) {
+        currentDoor = null
         canInteract = false
         player.hideInteraction()
       }
