@@ -50,7 +50,7 @@ let canInteract = false
 
 loadScene(scene).then((sceneData) => {
   const player = new Player(camera, sceneData.colliders)
-  const { doorObject, teleportPos } = sceneData
+  let { doorObject, teleportPos } = sceneData
 
   player.onInteract = async () => {
     if (!canInteract || !doorObject || !teleportPos) return
@@ -59,6 +59,7 @@ loadScene(scene).then((sceneData) => {
 
     await transition.fadeOut()
 
+    doorObject.visible = false
     doorObject.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         player.removeCollider(child)
@@ -66,6 +67,8 @@ loadScene(scene).then((sceneData) => {
     })
 
     camera.position.copy(teleportPos)
+    doorObject = null
+    teleportPos = null
     await transition.fadeIn()
   }
 
