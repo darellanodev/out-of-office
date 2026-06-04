@@ -6,6 +6,8 @@ import { MUSIC } from './constants/music'
 import { SCENE } from './constants/scene'
 import { LIGHTS } from './constants/lights'
 import { ASSETS } from './constants/assets'
+import { DOOR } from './constants/door'
+import { TransitionManager } from './TransitionManager'
 
 const bgMusic = new Audio(`${import.meta.env.BASE_URL}${ASSETS.music}`)
 bgMusic.loop = MUSIC.loop
@@ -42,8 +44,30 @@ scene.add(ambientLight)
 
 document.body.appendChild(renderer.domElement)
 
-loadScene(scene).then((colliders) => {
-  const player = new Player(camera, colliders)
+const transition = new TransitionManager()
+const doorRaycaster = new THREE.Raycaster()
+let canInteract = false
+
+loadScene(scene).then((sceneData) => {
+  const player = new Player(camera, sceneData.colliders)
+  const { doorObject, teleportPos } = sceneData
+
+  player.onInteract = async () => {
+    if (!canInteract || !doorObject || !teleportPos) return
+    canInteract = false
+    player.hideInteraction()
+
+    await transition.fadeOut()
+
+    doorObject.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        player.removeCollider(child)
+      }
+    })
+
+    camera.position.copy(teleportPos)
+    await transition.fadeIn()
+  }
 
   let prevTime = performance.now()
 
@@ -54,6 +78,29 @@ loadScene(scene).then((colliders) => {
     prevTime = time
 
     player.update(delta)
+
+    if (player.isLocked && doorObject && teleportPos) {
+      doorRaycaster.setFromCamera(new THREE.Vector2(0, 0), camera)
+      doorRaycaster.far = DOOR.interactionDistance
+      const hits = doorRaycaster.intersectObject(doorObject, true)
+
+      if (hits.length > 0) {
+        if (!canInteract) {
+          canInteract = true
+          player.showInteraction('E: Abrir')
+        }
+      } else {
+        if (canInteract) {
+          canInteract = false
+          player.hideInteraction()
+        }
+      }
+    } else {
+      if (canInteract) {
+        canInteract = false
+        player.hideInteraction()
+      }
+    }
 
     renderer.render(scene, camera)
   }

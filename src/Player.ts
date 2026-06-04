@@ -5,14 +5,15 @@ import { Hud } from './Hud'
 
 export class Player {
   private controls: PointerLockControls
-  private keys = { w: false, a: false, s: false, d: false }
+  private keys = { w: false, a: false, s: false, d: false, e: false }
   private direction = new THREE.Vector3()
   private speed = PLAYER.speed
   private raycaster = new THREE.Raycaster()
   private colliders: THREE.Object3D[]
-  private camera: THREE.Camera
+  camera: THREE.Camera
   private hud: Hud
   private distanceTraveled = 0
+  onInteract?: () => void
 
   constructor(camera: THREE.Camera, colliders: THREE.Object3D[]) {
     this.camera = camera
@@ -25,9 +26,27 @@ export class Player {
     document.addEventListener('keyup', (e) => this.onKeyUp(e))
   }
 
+  showInteraction(text: string) {
+    this.hud.showInteraction(text)
+  }
+
+  hideInteraction() {
+    this.hud.hideInteraction()
+  }
+
+  removeCollider(mesh: THREE.Object3D) {
+    const index = this.colliders.indexOf(mesh)
+    if (index !== -1) this.colliders.splice(index, 1)
+  }
+
   private onKeyDown(e: KeyboardEvent) {
     const key = e.key.toLowerCase()
-    if (key in this.keys) this.keys[key as keyof typeof this.keys] = true
+    if (key in this.keys) {
+      this.keys[key as keyof typeof this.keys] = true
+      if (key === 'e' && this.controls.isLocked) {
+        this.onInteract?.()
+      }
+    }
   }
 
   private onKeyUp(e: KeyboardEvent) {
