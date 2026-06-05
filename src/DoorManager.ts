@@ -1,24 +1,25 @@
 import * as THREE from 'three'
 import { DOOR } from './constants/door'
-import type { DoorEntry } from './SceneLoader'
+import { Door } from './Door'
 import type { Player } from './Player'
 import type { TransitionManager } from './TransitionManager'
 
 export class DoorManager {
-  private doors: DoorEntry[] = []
-  private currentDoor: DoorEntry | null = null
+  private doors: Door[] = []
+  private currentDoor: Door | null = null
   private canInteract = false
   private raycaster = new THREE.Raycaster()
 
-  setDoors(doors: DoorEntry[]) {
+  setDoors(doors: Door[]) {
     this.doors = doors
   }
 
   findDoor(camera: THREE.Camera, player: Player) {
-    let foundDoor: DoorEntry | null = null
+    let foundDoor: Door | null = null
 
     if (player.isLocked) {
       for (const entry of this.doors) {
+        if (!entry.isActive) continue
         this.raycaster.setFromCamera(new THREE.Vector2(0, 0), camera)
         this.raycaster.far = DOOR.interactionDistance
         const hits = this.raycaster.intersectObject(entry.doorObject, true)
@@ -59,16 +60,8 @@ export class DoorManager {
     await transition.fadeOut()
 
     const door = this.currentDoor
-    door.doorObject.visible = false
-    door.doorObject.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        player.removeCollider(child)
-      }
-    })
+    door.deactivate(player)
     camera.position.copy(door.teleportPos)
-
-    const idx = this.doors.indexOf(door)
-    if (idx !== -1) this.doors.splice(idx, 1)
 
     this.currentDoor = null
     await transition.fadeIn()

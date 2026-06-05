@@ -2,15 +2,11 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { SHADOWS } from './constants/shadows'
 import { ASSETS } from './constants/assets'
-
-export interface DoorEntry {
-  doorObject: THREE.Object3D
-  teleportPos: THREE.Vector3
-}
+import { Door } from './Door'
 
 export interface SceneData {
   colliders: THREE.Mesh[]
-  doors: DoorEntry[]
+  doors: Door[]
 }
 
 export function loadScene(scene: THREE.Scene): Promise<SceneData> {
@@ -52,13 +48,10 @@ export function loadScene(scene: THREE.Scene): Promise<SceneData> {
           }
         })
 
-        const doors: DoorEntry[] = doorEntries.map(d => {
+        const doors: Door[] = doorEntries.map(d => {
           const num = d.name.replace('Door_', '')
           const found = teleportEntries.find(t => t.name.replace('Teleport_', '') === num)
-          return {
-            doorObject: d.object,
-            teleportPos: found ? found.pos : new THREE.Vector3(),
-          }
+          return new Door(d.object, found ? found.pos : new THREE.Vector3())
         })
 
         resolve({ colliders, doors })
