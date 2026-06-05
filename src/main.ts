@@ -49,7 +49,7 @@ const doorManager = new DoorManager()
 
 loadScene(scene).then((sceneData) => {
   const player = new Player(camera, sceneData.colliders)
-  doorManager.setDoors(sceneData.doorObject, sceneData.teleportPos, sceneData.linkedDoors)
+  doorManager.setDoors(sceneData.doors)
 
   player.onInteract = () => doorManager.interact(player, camera, transition)
 

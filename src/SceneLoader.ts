@@ -10,9 +10,7 @@ export interface DoorEntry {
 
 export interface SceneData {
   colliders: THREE.Mesh[]
-  doorObject: THREE.Object3D | null
-  teleportPos: THREE.Vector3 | null
-  linkedDoors: DoorEntry[]
+  doors: DoorEntry[]
 }
 
 export function loadScene(scene: THREE.Scene): Promise<SceneData> {
@@ -23,8 +21,6 @@ export function loadScene(scene: THREE.Scene): Promise<SceneData> {
       (gltf) => {
         scene.add(gltf.scene)
         const colliders: THREE.Mesh[] = []
-        let doorObject: THREE.Object3D | null = null
-        let teleportPos: THREE.Vector3 | null = null
         const doorEntries: { name: string; object: THREE.Object3D }[] = []
         const teleportEntries: { name: string; pos: THREE.Vector3 }[] = []
 
@@ -45,23 +41,18 @@ export function loadScene(scene: THREE.Scene): Promise<SceneData> {
             colliders.push(object)
           }
 
-          if (object.name === 'Door_1') {
-            doorObject = object
-          } else if (object.name.startsWith('Door_')) {
+          if (object.name.startsWith('Door_')) {
             doorEntries.push({ name: object.name, object })
           }
 
-          if (object.name === 'Teleport_1') {
-            teleportPos = new THREE.Vector3()
-            object.getWorldPosition(teleportPos)
-          } else if (object.name.startsWith('Teleport_')) {
+          if (object.name.startsWith('Teleport_')) {
             const pos = new THREE.Vector3()
             object.getWorldPosition(pos)
             teleportEntries.push({ name: object.name, pos })
           }
         })
 
-        const linkedDoors: DoorEntry[] = doorEntries.map(d => {
+        const doors: DoorEntry[] = doorEntries.map(d => {
           const num = d.name.replace('Door_', '')
           const found = teleportEntries.find(t => t.name.replace('Teleport_', '') === num)
           return {
@@ -70,7 +61,7 @@ export function loadScene(scene: THREE.Scene): Promise<SceneData> {
           }
         })
 
-        resolve({ colliders, doorObject, teleportPos, linkedDoors })
+        resolve({ colliders, doors })
       },
       undefined,
       (error) => reject(error),

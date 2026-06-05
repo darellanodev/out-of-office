@@ -5,57 +5,26 @@ import type { Player } from './Player'
 import type { TransitionManager } from './TransitionManager'
 
 export class DoorManager {
-  private doorObject: THREE.Object3D | null = null
-  private teleportPos: THREE.Vector3 | null = null
-  private linkedDoors: DoorEntry[] = []
-  private currentDoor: {
-    object: THREE.Object3D
-    teleport: THREE.Vector3
-    isLinked: boolean
-  } | null = null
+  private doors: DoorEntry[] = []
+  private currentDoor: DoorEntry | null = null
   private canInteract = false
   private raycaster = new THREE.Raycaster()
 
-  setDoors(
-    doorObject: THREE.Object3D | null,
-    teleportPos: THREE.Vector3 | null,
-    linkedDoors: DoorEntry[],
-  ) {
-    this.doorObject = doorObject
-    this.teleportPos = teleportPos
-    this.linkedDoors = linkedDoors
+  setDoors(doors: DoorEntry[]) {
+    this.doors = doors
   }
 
   findDoor(camera: THREE.Camera, player: Player) {
-    let foundDoor: typeof this.currentDoor = null
+    let foundDoor: DoorEntry | null = null
 
     if (player.isLocked) {
-      if (this.doorObject && this.teleportPos) {
+      for (const entry of this.doors) {
         this.raycaster.setFromCamera(new THREE.Vector2(0, 0), camera)
         this.raycaster.far = DOOR.interactionDistance
-        const hits = this.raycaster.intersectObject(this.doorObject, true)
+        const hits = this.raycaster.intersectObject(entry.doorObject, true)
         if (hits.length > 0) {
-          foundDoor = {
-            object: this.doorObject,
-            teleport: this.teleportPos,
-            isLinked: false,
-          }
-        }
-      }
-
-      if (!foundDoor) {
-        for (const entry of this.linkedDoors) {
-          this.raycaster.setFromCamera(new THREE.Vector2(0, 0), camera)
-          this.raycaster.far = DOOR.interactionDistance
-          const hits = this.raycaster.intersectObject(entry.doorObject, true)
-          if (hits.length > 0) {
-            foundDoor = {
-              object: entry.doorObject,
-              teleport: entry.teleportPos,
-              isLinked: true,
-            }
-            break
-          }
+          foundDoor = entry
+          break
         }
       }
     }
@@ -89,28 +58,18 @@ export class DoorManager {
     player.hideInteraction()
     await transition.fadeOut()
 
-    if (this.currentDoor.isLinked) {
-      for (const entry of this.linkedDoors) {
-        entry.doorObject.visible = false
-        entry.doorObject.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            player.removeCollider(child)
-          }
-        })
+    const door = this.currentDoor
+    door.doorObject.visible = false
+    door.doorObject.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        player.removeCollider(child)
       }
-      this.linkedDoors = []
-    } else {
-      this.doorObject!.visible = false
-      this.doorObject!.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          player.removeCollider(child)
-        }
-      })
-      this.doorObject = null
-      this.teleportPos = null
-    }
+    })
+    camera.position.copy(door.teleportPos)
 
-    camera.position.copy(this.currentDoor.teleport)
+    const idx = this.doors.indexOf(door)
+    if (idx !== -1) this.doors.splice(idx, 1)
+
     this.currentDoor = null
     await transition.fadeIn()
   }
