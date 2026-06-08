@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import type { GLTF } from 'three/addons/loaders/GLTFLoader.js'
 import { SHADOWS } from './constants/shadows'
 import { ASSETS } from './constants/assets'
 import { Door } from './Door'
@@ -12,52 +13,58 @@ export interface SceneData {
 export function loadScene(scene: THREE.Scene): Promise<SceneData> {
   return new Promise((resolve, reject) => {
     const loader = new GLTFLoader()
-    loader.load(
-      ASSETS.scene,
-      (gltf) => {
-        scene.add(gltf.scene)
-        const colliders: THREE.Mesh[] = []
-        const doorEntries: { name: string; object: THREE.Object3D }[] = []
-        const teleportEntries: { name: string; pos: THREE.Vector3 }[] = []
+    loader.load(ASSETS.scene, onLoad, undefined, onError)
 
-        gltf.scene.traverse((object) => {
-          if (object instanceof THREE.Light) {
-            object.castShadow = true
-            if (object.shadow) {
-              object.shadow.mapSize.width = SHADOWS.mapSize
-              object.shadow.mapSize.height = SHADOWS.mapSize
-              object.shadow.bias = SHADOWS.bias
-              object.shadow.normalBias = SHADOWS.normalBias
-            }
-          }
+    function onLoad(gltf: GLTF) {
+      scene.add(gltf.scene)
+      const { colliders, doors } = processGltf(gltf)
+      resolve({ colliders, doors })
+    }
 
-          if (object instanceof THREE.Mesh) {
-            object.castShadow = true
-            object.receiveShadow = true
-            colliders.push(object)
-          }
-
-          if (object.name.startsWith('Door_')) {
-            doorEntries.push({ name: object.name, object })
-          }
-
-          if (object.name.startsWith('Teleport_')) {
-            const pos = new THREE.Vector3()
-            object.getWorldPosition(pos)
-            teleportEntries.push({ name: object.name, pos })
-          }
-        })
-
-        const doors: Door[] = doorEntries.map(d => {
-          const num = d.name.replace('Door_', '')
-          const found = teleportEntries.find(t => t.name.replace('Teleport_', '') === num)
-          return new Door(d.object, found ? found.pos : new THREE.Vector3())
-        })
-
-        resolve({ colliders, doors })
-      },
-      undefined,
-      (error) => reject(error),
-    )
+    function onError(error: unknown) {
+      reject(error)
+    }
   })
+}
+
+function processGltf(gltf: GLTF): SceneData {
+  const colliders: THREE.Mesh[] = []
+  const doorEntries: { name: string; object: THREE.Object3D }[] = []
+  const teleportEntries: { name: string; pos: THREE.Vector3 }[] = []
+
+  gltf.scene.traverse((object) => {
+    if (object instanceof THREE.Light) {
+      object.castShadow = true
+      if (object.shadow) {
+        object.shadow.mapSize.width = SHADOWS.mapSize
+        object.shadow.mapSize.height = SHADOWS.mapSize
+        object.shadow.bias = SHADOWS.bias
+        object.shadow.normalBias = SHADOWS.normalBias
+      }
+    }
+
+    if (object instanceof THREE.Mesh) {
+      object.castShadow = true
+      object.receiveShadow = true
+      colliders.push(object)
+    }
+
+    if (object.name.startsWith('Door_')) {
+      doorEntries.push({ name: object.name, object })
+    }
+
+    if (object.name.startsWith('Teleport_')) {
+      const pos = new THREE.Vector3()
+      object.getWorldPosition(pos)
+      teleportEntries.push({ name: object.name, pos })
+    }
+  })
+
+  const doors: Door[] = doorEntries.map(d => {
+    const num = d.name.replace('Door_', '')
+    const found = teleportEntries.find(t => t.name.replace('Teleport_', '') === num)
+    return new Door(d.object, found ? found.pos : new THREE.Vector3())
+  })
+
+  return { colliders, doors }
 }
