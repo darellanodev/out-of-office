@@ -60,7 +60,7 @@ export class DoorManager {
     await transition.fadeOut()
 
     const door = this.currentDoor
-    door.deactivate(player)
+    door.deactivate()
     camera.position.copy(door.teleportPos)
 
     this.currentDoor = null

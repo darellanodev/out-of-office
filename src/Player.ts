@@ -34,11 +34,6 @@ export class Player {
     this.hud.hideInteraction()
   }
 
-  removeCollider(mesh: THREE.Object3D) {
-    const index = this.colliders.indexOf(mesh)
-    if (index !== -1) this.colliders.splice(index, 1)
-  }
-
   private onKeyDown(e: KeyboardEvent) {
     this.handleKey(e, true)
   }
