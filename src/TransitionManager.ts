@@ -17,19 +17,19 @@ export class TransitionManager {
     document.body.appendChild(this.overlay)
   }
 
-  fadeOut(): Promise<void> {
+  private animateOpacity(opacity: string): Promise<void> {
     return new Promise((resolve) => {
-      this.overlay.style.opacity = '1'
+      this.overlay.style.opacity = opacity
       this.overlay.addEventListener('transitionend', () => resolve(), { once: true })
       setTimeout(resolve, DOOR.fadeDuration * 1000)
     })
   }
 
+  fadeOut(): Promise<void> {
+    return this.animateOpacity('1')
+  }
+
   fadeIn(): Promise<void> {
-    return new Promise((resolve) => {
-      this.overlay.style.opacity = '0'
-      this.overlay.addEventListener('transitionend', () => resolve(), { once: true })
-      setTimeout(resolve, DOOR.fadeDuration * 1000)
-    })
+    return this.animateOpacity('0')
   }
 }
