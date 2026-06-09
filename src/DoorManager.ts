@@ -9,39 +9,40 @@ export class DoorManager {
   private currentDoor: Door | null = null
   private canInteract = false
   private raycaster = new THREE.Raycaster()
+  private screenCenter = new THREE.Vector2(0, 0)
 
   setDoors(doors: Door[]) {
     this.doors = doors
   }
 
   findDoor(camera: THREE.Camera, player: Player) {
-    let foundDoor: Door | null = null
+    const foundDoor = player.isLocked ? this.getDoorInSight(camera) : null
+    this.updateDoorInteraction(foundDoor, player)
+  }
 
-    if (player.isLocked) {
-      for (const entry of this.doors) {
-        if (!entry.isActive) continue
-        this.raycaster.setFromCamera(new THREE.Vector2(0, 0), camera)
-        this.raycaster.far = DOOR.interactionDistance
-        const hits = this.raycaster.intersectObject(entry.doorObject, true)
-        if (hits.length > 0) {
-          foundDoor = entry
-          break
-        }
+  private getDoorInSight(camera: THREE.Camera): Door | null {
+    for (const entry of this.doors) {
+      if (!entry.isActive) continue
+      this.raycaster.setFromCamera(this.screenCenter, camera)
+      this.raycaster.far = DOOR.interactionDistance
+      if (this.raycaster.intersectObject(entry.doorObject, true).length > 0) {
+        return entry
       }
     }
+    return null
+  }
 
-    if (foundDoor) {
-      if (this.currentDoor !== foundDoor) {
-        this.currentDoor = foundDoor
+  private updateDoorInteraction(door: Door | null, player: Player) {
+    if (door) {
+      if (this.currentDoor !== door) {
+        this.currentDoor = door
         this.canInteract = true
         player.showInteraction('E: Abrir')
       }
-    } else {
-      if (this.currentDoor) {
-        this.currentDoor = null
-        this.canInteract = false
-        player.hideInteraction()
-      }
+    } else if (this.currentDoor) {
+      this.currentDoor = null
+      this.canInteract = false
+      player.hideInteraction()
     }
   }
 
