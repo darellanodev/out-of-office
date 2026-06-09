@@ -6,7 +6,7 @@ import { ASSETS } from './constants/assets'
 import { Door } from './Door'
 
 export interface SceneData {
-  colliders: THREE.Mesh[]
+  meshes: THREE.Mesh[]
   doors: Door[]
 }
 
@@ -17,8 +17,8 @@ export function loadScene(scene: THREE.Scene): Promise<SceneData> {
 
     function onLoad(gltf: GLTF) {
       scene.add(gltf.scene)
-      const { colliders, doors } = processGltf(gltf)
-      resolve({ colliders, doors })
+      const { meshes, doors } = processGltf(gltf)
+      resolve({ meshes, doors })
     }
 
     function onError(error: unknown) {
@@ -28,7 +28,7 @@ export function loadScene(scene: THREE.Scene): Promise<SceneData> {
 }
 
 function processGltf(gltf: GLTF): SceneData {
-  const colliders: THREE.Mesh[] = []
+  const meshes: THREE.Mesh[] = []
   const doorEntries: { name: string; object: THREE.Object3D }[] = []
   const teleportEntries: { name: string; pos: THREE.Vector3 }[] = []
 
@@ -46,7 +46,7 @@ function processGltf(gltf: GLTF): SceneData {
     if (object instanceof THREE.Mesh) {
       object.castShadow = true
       object.receiveShadow = true
-      colliders.push(object)
+      meshes.push(object)
     }
 
     if (object.name.startsWith('Door_')) {
@@ -67,5 +67,5 @@ function processGltf(gltf: GLTF): SceneData {
     return new Door(door.object, teleportPos)
   })
 
-  return { colliders, doors }
+  return { meshes, doors }
 }

@@ -14,7 +14,7 @@ const transition = new TransitionManager()
 const doorManager = new DoorManager()
 
 loadScene(scene).then((sceneData) => {
-  const player = new Player(camera, sceneData.colliders)
+  const player = new Player(camera, sceneData.meshes)
   doorManager.setDoors(sceneData.doors)
 
   player.onInteract = () => doorManager.interact(player, camera, transition)

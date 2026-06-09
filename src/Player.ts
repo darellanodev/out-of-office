@@ -9,15 +9,15 @@ export class Player {
   private direction = new THREE.Vector3()
   private speed = PLAYER.speed
   private raycaster = new THREE.Raycaster()
-  private colliders: THREE.Object3D[]
+  private obstacles: THREE.Object3D[]
   camera: THREE.Camera
   private hud: Hud
   private distanceTraveled = 0
   onInteract?: () => void
 
-  constructor(camera: THREE.Camera, colliders: THREE.Object3D[]) {
+  constructor(camera: THREE.Camera, obstacles: THREE.Object3D[]) {
     this.camera = camera
-    this.colliders = colliders
+    this.obstacles = obstacles
     this.controls = new PointerLockControls(camera, document.body)
     this.hud = new Hud()
 
@@ -89,7 +89,7 @@ export class Player {
     const moveDirection = moveVector.clone().normalize()
     this.raycaster.set(this.camera.position, moveDirection)
     this.raycaster.far = moveVector.length() + PLAYER.collisionMargin
-    const intersects = this.raycaster.intersectObjects(this.colliders, true)
+    const intersects = this.raycaster.intersectObjects(this.obstacles, true)
     if (
       intersects.length === 0 ||
       intersects[0].distance > PLAYER.collisionMargin
