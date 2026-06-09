@@ -16,11 +16,11 @@ export class DoorManager {
   }
 
   findDoor(camera: THREE.Camera, player: Player) {
-    const foundDoor = player.isLocked ? this.getDoorInSight(camera) : null
+    const foundDoor = player.isLocked ? this.findLookedAtDoor(camera) : null
     this.updateDoorInteraction(foundDoor, player)
   }
 
-  private getDoorInSight(camera: THREE.Camera): Door | null {
+  private findLookedAtDoor(camera: THREE.Camera): Door | null {
     for (const entry of this.doors) {
       if (!entry.isActive) continue
       this.raycaster.setFromCamera(this.screenCenter, camera)
