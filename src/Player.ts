@@ -40,21 +40,37 @@ export class Player {
   }
 
   private onKeyDown(e: KeyboardEvent) {
+    this.handleKey(e, true)
+  }
+
+  private onKeyUp(e: KeyboardEvent) {
+    this.handleKey(e, false)
+  }
+
+  private handleKey(e: KeyboardEvent, pressed: boolean) {
     const key = e.key.toLowerCase()
     if (key in this.keys) {
-      this.keys[key as keyof typeof this.keys] = true
-      if (key === 'e' && this.controls.isLocked) {
+      this.keys[key as keyof typeof this.keys] = pressed
+      if (pressed && key === 'e' && this.controls.isLocked) {
         this.onInteract?.()
       }
     }
   }
 
-  private onKeyUp(e: KeyboardEvent) {
-    const key = e.key.toLowerCase()
-    if (key in this.keys) this.keys[key as keyof typeof this.keys] = false
+  update(delta: number) {
+    const moveVector = this.computeMoveVector(delta)
+    if (moveVector.length() > 0) {
+      this.distanceTraveled += moveVector.length()
+      this.tryMove(moveVector)
+    }
+    this.hud.update(
+      this.controls.isLocked,
+      this.distanceTraveled,
+      PLAYER.distanceThreshold,
+    )
   }
 
-  update(delta: number) {
+  private computeMoveVector(delta: number): THREE.Vector3 {
     this.direction.z = Number(this.keys.w) - Number(this.keys.s)
     this.direction.x = Number(this.keys.d) - Number(this.keys.a)
     this.direction.normalize()
@@ -71,26 +87,20 @@ export class Player {
       moveVector.addScaledVector(forward, this.direction.z * this.speed * delta)
     if (this.keys.a || this.keys.d)
       moveVector.addScaledVector(right, this.direction.x * this.speed * delta)
+    return moveVector
+  }
 
-    if (moveVector.length() > 0) {
-      this.distanceTraveled += moveVector.length()
-      const forwardDir = moveVector.clone().normalize()
-      this.raycaster.set(this.camera.position, forwardDir)
-      this.raycaster.far = moveVector.length() + PLAYER.collisionMargin
-      const intersects = this.raycaster.intersectObjects(this.colliders, true)
-      if (
-        intersects.length === 0 ||
-        intersects[0].distance > PLAYER.collisionMargin
-      ) {
-        this.camera.position.add(moveVector)
-      }
+  private tryMove(moveVector: THREE.Vector3) {
+    const moveDirection = moveVector.clone().normalize()
+    this.raycaster.set(this.camera.position, moveDirection)
+    this.raycaster.far = moveVector.length() + PLAYER.collisionMargin
+    const intersects = this.raycaster.intersectObjects(this.colliders, true)
+    if (
+      intersects.length === 0 ||
+      intersects[0].distance > PLAYER.collisionMargin
+    ) {
+      this.camera.position.add(moveVector)
     }
-
-    this.hud.update(
-      this.controls.isLocked,
-      this.distanceTraveled,
-      PLAYER.distanceThreshold,
-    )
   }
 
   get isLocked(): boolean {
