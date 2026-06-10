@@ -16,7 +16,7 @@ export class DoorManager {
   }
 
   findDoor(camera: THREE.Camera, player: Player) {
-    const foundDoor = player.isLocked ? this.findLookedAtDoor(camera) : null
+    const foundDoor = player.isMouseCaptured ? this.findLookedAtDoor(camera) : null
     this.updateDoorInteraction(foundDoor, player)
   }
 

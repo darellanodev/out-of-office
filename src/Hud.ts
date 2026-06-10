@@ -28,9 +28,9 @@ export class Hud {
     this.interactionPrompt.style.display = 'none'
   }
 
-  update(isLocked: boolean, distanceTraveled: number, threshold: number): void {
-    this.instructions.style.display = isLocked ? 'none' : 'block'
+  update(isMouseCaptured: boolean, distanceTraveled: number, threshold: number): void {
+    this.instructions.style.display = isMouseCaptured ? 'none' : 'block'
     this.hudText.style.display =
-      isLocked && distanceTraveled < threshold ? 'block' : 'none'
+      isMouseCaptured && distanceTraveled < threshold ? 'block' : 'none'
   }
 }

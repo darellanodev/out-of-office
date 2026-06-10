@@ -59,7 +59,7 @@ export class Player {
       this.tryMove(moveVector)
     }
     this.hud.update(
-      this.controls.isLocked,
+      this.isMouseCaptured,
       this.distanceTraveled,
       PLAYER.distanceThreshold,
     )
@@ -98,7 +98,7 @@ export class Player {
     }
   }
 
-  get isLocked(): boolean {
+  get isMouseCaptured(): boolean {
     return this.controls.isLocked
   }
 
