@@ -3,23 +3,20 @@ import { DOOR } from './constants/door'
 import { Door } from './Door'
 import type { Player } from './Player'
 import type { TransitionManager } from './TransitionManager'
-
 export class DoorManager {
   private doors: Door[] = []
   private currentDoor: Door | null = null
   private canInteract = false
+  private isInteracting = false
   private raycaster = new THREE.Raycaster()
   private screenCenter = new THREE.Vector2(0, 0)
-
   setDoors(doors: Door[]) {
     this.doors = doors
   }
-
   findDoor(camera: THREE.Camera, player: Player) {
     const foundDoor = player.isMouseCaptured ? this.findLookedAtDoor(camera) : null
     this.updateDoorInteraction(foundDoor, player)
   }
-
   private findLookedAtDoor(camera: THREE.Camera): Door | null {
     for (const entry of this.doors) {
       if (!entry.isActive) continue
@@ -31,8 +28,8 @@ export class DoorManager {
     }
     return null
   }
-
   private updateDoorInteraction(door: Door | null, player: Player) {
+    if (this.isInteracting) return
     if (door) {
       if (this.currentDoor !== door) {
         this.currentDoor = door
@@ -45,26 +42,24 @@ export class DoorManager {
       player.hideInteraction()
     }
   }
-
   get canInteractWithDoor(): boolean {
     return this.canInteract
   }
-
   async interact(
     player: Player,
     camera: THREE.Camera,
     transition: TransitionManager,
   ) {
-    if (!this.canInteract || !this.currentDoor) return
+    if (!this.canInteract || !this.currentDoor || this.isInteracting) return
+    this.isInteracting = true
     this.canInteract = false
     player.hideInteraction()
-    await transition.fadeOut()
-
     const door = this.currentDoor
     door.deactivate()
-    camera.position.copy(door.teleportPos)
-
     this.currentDoor = null
+    await transition.fadeOut()
+    camera.position.copy(door.teleportPos)
     await transition.fadeIn()
+    this.isInteracting = false
   }
 }
