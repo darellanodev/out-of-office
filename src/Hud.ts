@@ -6,7 +6,10 @@ export class Hud {
   private interactionPrompt: HTMLElement
 
   constructor() {
-    this.instructions = this.createDiv(HUD.instructionsStyle, HUD.instructionsText)
+    this.instructions = this.createDiv(
+      HUD.instructionsStyle,
+      HUD.instructionsText,
+    )
     this.hudText = this.createDiv(HUD.infoStyle, HUD.infoText)
     this.interactionPrompt = this.createDiv(HUD.interactionStyle)
   }
@@ -28,7 +31,11 @@ export class Hud {
     this.interactionPrompt.style.display = 'none'
   }
 
-  update(isMouseCaptured: boolean, distanceTraveled: number, threshold: number): void {
+  update(
+    isMouseCaptured: boolean,
+    distanceTraveled: number,
+    threshold: number,
+  ): void {
     this.instructions.style.display = isMouseCaptured ? 'none' : 'block'
     this.hudText.style.display =
       isMouseCaptured && distanceTraveled < threshold ? 'block' : 'none'

@@ -10,13 +10,18 @@ export class DoorManager {
   private isInteracting = false
   private raycaster = new THREE.Raycaster()
   private screenCenter = new THREE.Vector2(0, 0)
+
   setDoors(doors: Door[]) {
     this.doors = doors
   }
+
   findDoor(camera: THREE.Camera, player: Player) {
-    const foundDoor = player.isMouseCaptured ? this.findLookedAtDoor(camera) : null
+    const foundDoor = player.isMouseCaptured
+      ? this.findLookedAtDoor(camera)
+      : null
     this.updateDoorInteraction(foundDoor, player)
   }
+
   private findLookedAtDoor(camera: THREE.Camera): Door | null {
     for (const entry of this.doors) {
       if (!entry.isActive) continue
@@ -28,6 +33,7 @@ export class DoorManager {
     }
     return null
   }
+
   private updateDoorInteraction(door: Door | null, player: Player) {
     if (this.isInteracting) return
     if (door) {
@@ -42,9 +48,11 @@ export class DoorManager {
       player.hideInteraction()
     }
   }
+
   get canInteractWithDoor(): boolean {
     return this.canInteract
   }
+
   async interact(
     player: Player,
     camera: THREE.Camera,

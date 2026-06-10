@@ -20,7 +20,9 @@ export class TransitionManager {
   private animateOpacity(opacity: string): Promise<void> {
     return new Promise((resolve) => {
       this.overlay.style.opacity = opacity
-      this.overlay.addEventListener('transitionend', () => resolve(), { once: true })
+      this.overlay.addEventListener('transitionend', () => resolve(), {
+        once: true,
+      })
       setTimeout(resolve, DOOR.fadeDuration * 1000)
     })
   }

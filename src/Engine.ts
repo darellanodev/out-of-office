@@ -28,7 +28,10 @@ export function createEngine(canvas: HTMLCanvasElement) {
   updateSize()
   window.addEventListener('resize', updateSize)
 
-  const ambientLight = new THREE.AmbientLight(LIGHTS.ambientColor, LIGHTS.ambientIntensity)
+  const ambientLight = new THREE.AmbientLight(
+    LIGHTS.ambientColor,
+    LIGHTS.ambientIntensity,
+  )
   scene.add(ambientLight)
 
   return { scene, camera, renderer }

@@ -60,10 +60,12 @@ function processGltf(gltf: GLTF): SceneData {
     }
   })
 
-  const doors: Door[] = doorEntries.map(door => {
+  const doors: Door[] = doorEntries.map((door) => {
     const num = door.name.replace('Door_', '')
-    const found = teleportEntries.find(teleport => teleport.name.replace('Teleport_', '') === num)
-    const teleportPos = found ? found.pos : new THREE.Vector3() 
+    const found = teleportEntries.find(
+      (teleport) => teleport.name.replace('Teleport_', '') === num,
+    )
+    const teleportPos = found ? found.pos : new THREE.Vector3()
     return new Door(door.object, teleportPos)
   })
 
