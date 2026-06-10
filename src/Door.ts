@@ -17,5 +17,8 @@ export class Door {
   deactivate() {
     this.active = false
     this.doorObject.visible = false
+    this.doorObject.traverse((child) => {
+      child.layers.disableAll()
+    })
   }
 }
