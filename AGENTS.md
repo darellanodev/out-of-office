@@ -1,30 +1,30 @@
 # AGENTS.md
 
-Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
+Guidelines to reduce LLM coding mistakes. Merge with project instructions as needed.
 
-**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
+**Tradeoff:** Bias toward caution over speed. For trivial tasks, use judgment.
 
 ## 1. Think Before Coding
 
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
 
 Before implementing:
-- State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them - don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
+- State assumptions explicitly. If uncertain, ask.
+- If multiple interpretations, present them - don't pick silently.
+- If simpler approach exists, say so. Push back when warranted.
+- If unclear, stop. Name what's confusing. Ask.
 
 ## 2. Simplicity First
 
-**Minimum code that solves the problem. Nothing speculative.**
+**Minimum code that solves problem. Nothing speculative.**
 
 - No features beyond what was asked.
 - No abstractions for single-use code.
-- No "flexibility" or "configurability" that wasn't requested.
+- No "flexibility" or "configurability" not requested.
 - No error handling for impossible scenarios.
-- If you write 200 lines and it could be 50, rewrite it.
+- If 200 lines could be 50, rewrite.
 
-Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+Ask: "Would senior engineer say this is overcomplicated?" If yes, simplify.
 
 ## 3. Surgical Changes
 
@@ -32,15 +32,15 @@ Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, sim
 
 When editing existing code:
 - Don't "improve" adjacent code, comments, or formatting.
-- Don't refactor things that aren't broken.
+- Don't refactor things not broken.
 - Match existing style, even if you'd do it differently.
-- If you notice unrelated dead code, mention it - don't delete it.
+- If notice unrelated dead code, mention - don't delete.
 
-When your changes create orphans:
-- Remove imports/variables/functions that YOUR changes made unused.
+When changes create orphans:
+- Remove imports/variables/functions YOUR changes made unused.
 - Don't remove pre-existing dead code unless asked.
 
-The test: Every changed line should trace directly to the user's request.
+Test: Every changed line trace directly to user request.
 
 ## 4. Goal-Driven Execution
 
@@ -51,15 +51,15 @@ Transform tasks into verifiable goals:
 - "Fix the bug" → "Write a test that reproduces it, then make it pass"
 - "Refactor X" → "Ensure tests pass before and after"
 
-For multi-step tasks, state a brief plan:
+For multi-step tasks, state brief plan:
 ```
 1. [Step] → verify: [check]
 2. [Step] → verify: [check]
 3. [Step] → verify: [check]
 ```
 
-Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+Strong criteria let loop independently. Weak ("make it work") require constant clarification.
 
 ---
 
-**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+**Working if:** fewer unnecessary diffs, fewer rewrites due to overcomplication, clarifying questions come before implementation rather than after mistakes.
