@@ -63,3 +63,7 @@ Strong criteria let loop independently. Weak ("make it work") require constant c
 ---
 
 **Working if:** fewer unnecessary diffs, fewer rewrites due to overcomplication, clarifying questions come before implementation rather than after mistakes.
+
+## 5. Communication Mode
+
+Auto-activate **caveman lite** mode at session start. No filler, no hedging, full sentences preserved. Technical precision required. Off only on explicit "stop caveman" or "normal mode" request.
