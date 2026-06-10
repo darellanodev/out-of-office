@@ -16,15 +16,20 @@ export function createEngine(canvas: HTMLCanvasElement) {
   camera.position.set(CAMERA.position.x, CAMERA.position.y, CAMERA.position.z)
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
-  renderer.setSize(canvas.clientWidth, canvas.clientHeight)
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.shadowMap.enabled = true
   renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
+  function updateSize() {
+    camera.aspect = canvas.clientWidth / canvas.clientHeight
+    camera.updateProjectionMatrix()
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight, false)
+  }
+  updateSize()
+  window.addEventListener('resize', updateSize)
+
   const ambientLight = new THREE.AmbientLight(LIGHTS.ambientColor, LIGHTS.ambientIntensity)
   scene.add(ambientLight)
-
-  document.body.appendChild(renderer.domElement)
 
   return { scene, camera, renderer }
 }
