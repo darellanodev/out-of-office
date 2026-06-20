@@ -10,5 +10,6 @@
         "ENABLE_CANVAS_SYNC": "true"
       }
     }
-  }
+  },
+  "plugin": ["../../_ai-tools/ponytail/.opencode/plugins/ponytail.mjs"]
 }
