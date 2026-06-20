@@ -49,10 +49,6 @@ export class DoorManager {
     }
   }
 
-  get canInteractWithDoor(): boolean {
-    return this.canInteract
-  }
-
   async interact(
     player: Player,
     camera: THREE.Camera,

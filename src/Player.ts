@@ -102,7 +102,4 @@ export class Player {
     return this.controls.isLocked
   }
 
-  get distanceTraveledTotal(): number {
-    return this.distanceTraveled
-  }
 }
