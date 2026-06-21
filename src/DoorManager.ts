@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { DOOR } from './constants/door'
+import { DOOR } from './constants'
 import { Door } from './Door'
 import type { Player } from './Player'
 import type { TransitionManager } from './TransitionManager'

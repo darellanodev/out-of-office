@@ -1,4 +1,4 @@
-import { DOOR } from './constants/door'
+import { DOOR } from './constants'
 
 export class TransitionManager {
   private overlay: HTMLDivElement

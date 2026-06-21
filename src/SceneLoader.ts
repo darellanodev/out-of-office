@@ -1,8 +1,7 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js'
-import { SHADOWS } from './constants/shadows'
-import { ASSETS } from './constants/assets'
+import { SHADOWS, ASSETS } from './constants'
 import { Door } from './Door'
 
 export interface SceneData {

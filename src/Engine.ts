@@ -1,7 +1,5 @@
 import * as THREE from 'three'
-import { CAMERA } from './constants/camera'
-import { SCENE } from './constants/scene'
-import { LIGHTS } from './constants/lights'
+import { CAMERA, SCENE, LIGHTS } from './constants'
 
 export function createEngine(canvas: HTMLCanvasElement) {
   const scene = new THREE.Scene()

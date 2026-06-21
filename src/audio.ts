@@ -1,5 +1,4 @@
-import { MUSIC } from './constants/music'
-import { ASSETS } from './constants/assets'
+import { MUSIC, ASSETS } from './constants'
 
 export function setupBackgroundMusic() {
   const bgMusic = new Audio(`${import.meta.env.BASE_URL}${ASSETS.music}`)

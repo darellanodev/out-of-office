@@ -1,4 +1,4 @@
-import { HUD } from './constants/hud'
+import { HUD } from './constants'
 
 export class Hud {
   private instructions: HTMLElement
