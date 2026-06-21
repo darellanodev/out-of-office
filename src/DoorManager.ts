@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { DOOR } from './constants'
 import { Door } from './Door'
 import type { Player } from './Player'
-import type { TransitionManager } from './TransitionManager'
+import { fadeOut, fadeIn } from './TransitionManager'
 export class DoorManager {
   private doors: Door[] = []
   private currentDoor: Door | null = null
@@ -49,11 +49,7 @@ export class DoorManager {
     }
   }
 
-  async interact(
-    player: Player,
-    camera: THREE.Camera,
-    transition: TransitionManager,
-  ) {
+  async interact(player: Player, camera: THREE.Camera) {
     if (!this.canInteract || !this.currentDoor || this.isInteracting) return
     this.isInteracting = true
     this.canInteract = false
@@ -61,9 +57,9 @@ export class DoorManager {
     const door = this.currentDoor
     door.deactivate()
     this.currentDoor = null
-    await transition.fadeOut()
+    await fadeOut()
     camera.position.copy(door.teleportPos)
-    await transition.fadeIn()
+    await fadeIn()
     this.isInteracting = false
   }
 }
