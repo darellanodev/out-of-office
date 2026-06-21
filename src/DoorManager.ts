@@ -24,7 +24,7 @@ export class DoorManager {
 
   private findLookedAtDoor(camera: THREE.Camera): Door | null {
     for (const entry of this.doors) {
-      if (!entry.isActive) continue
+      if (!entry.active) continue
       this.raycaster.setFromCamera(this.screenCenter, camera)
       this.raycaster.far = DOOR.interactionDistance
       if (this.raycaster.intersectObject(entry.doorObject, true).length > 0) {
