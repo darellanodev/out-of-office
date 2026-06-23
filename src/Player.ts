@@ -22,8 +22,8 @@ export class Player {
     this.hud = new Hud()
 
     document.addEventListener('click', () => this.controls.lock())
-    document.addEventListener('keydown', (e) => this.onKeyDown(e))
-    document.addEventListener('keyup', (e) => this.onKeyUp(e))
+    document.addEventListener('keydown', (e) => this.handleKey(e, true))
+    document.addEventListener('keyup', (e) => this.handleKey(e, false))
   }
 
   showInteraction(text: string) {
@@ -32,14 +32,6 @@ export class Player {
 
   hideInteraction() {
     this.hud.hideInteraction()
-  }
-
-  private onKeyDown(e: KeyboardEvent) {
-    this.handleKey(e, true)
-  }
-
-  private onKeyUp(e: KeyboardEvent) {
-    this.handleKey(e, false)
   }
 
   private handleKey(e: KeyboardEvent, pressed: boolean) {
