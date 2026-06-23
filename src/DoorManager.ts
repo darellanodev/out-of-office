@@ -6,7 +6,6 @@ import { fadeOut, fadeIn } from './TransitionManager'
 export class DoorManager {
   private doors: Door[] = []
   private currentDoor: Door | null = null
-  private canInteract = false
   private isInteracting = false
   private raycaster = new THREE.Raycaster()
   private screenCenter = new THREE.Vector2(0, 0)
@@ -39,20 +38,17 @@ export class DoorManager {
     if (door) {
       if (this.currentDoor !== door) {
         this.currentDoor = door
-        this.canInteract = true
         player.showInteraction('E: Abrir')
       }
     } else if (this.currentDoor) {
       this.currentDoor = null
-      this.canInteract = false
       player.hideInteraction()
     }
   }
 
   async interact(player: Player, camera: THREE.Camera) {
-    if (!this.canInteract || !this.currentDoor || this.isInteracting) return
+    if (!this.currentDoor || this.isInteracting) return
     this.isInteracting = true
-    this.canInteract = false
     player.hideInteraction()
     const door = this.currentDoor
     door.deactivate()
