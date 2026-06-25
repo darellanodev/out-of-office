@@ -11,3 +11,7 @@ A simple game to practice with threejs
 ## Resources
 
 See [resources](docs/resources.md)
+
+## Utils
+
+Run `node utils/tree-exclude.js . 6 tree.txt` to generate a directory/file tree list in `tree.txt`.
